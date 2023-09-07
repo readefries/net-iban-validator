@@ -4,6 +4,19 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>cloudcosmonaut.ibanvalidator</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Hindrik Bruinsma</Authors>
+    <Product>IBAN Validator</Product>
+    <Description> A simple .NET library to validate IBAN numbers for 74 countries.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>Iban Validator</Title>
+    <Copyright>Copyright (c) Hindrik Bruinsma and Contributors</Copyright>
+    <PackageProjectUrl>https://github.com/cloudcosmonaut/net-iban-validator</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/cloudcosmonaut/net-iban-validator</RepositoryUrl>
+    <DelaySign>true</DelaySign>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +27,7 @@
     <None Update="iban-countries.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
