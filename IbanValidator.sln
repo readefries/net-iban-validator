@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IbanValidator", "IbanValidator\IbanValidator.csproj", "{516B0D17-1296-4F8B-90B7-9ABA79F07953}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IbanValidator.Tests", "IbanValidator.Tests\IbanValidator.Tests.csproj", "{3DB8B00A-B68E-49BD-807F-B143F6639326}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{516B0D17-1296-4F8B-90B7-9ABA79F07953}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{516B0D17-1296-4F8B-90B7-9ABA79F07953}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{516B0D17-1296-4F8B-90B7-9ABA79F07953}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{516B0D17-1296-4F8B-90B7-9ABA79F07953}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DB8B00A-B68E-49BD-807F-B143F6639326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DB8B00A-B68E-49BD-807F-B143F6639326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DB8B00A-B68E-49BD-807F-B143F6639326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DB8B00A-B68E-49BD-807F-B143F6639326}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
