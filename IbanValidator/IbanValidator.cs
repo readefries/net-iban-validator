@@ -191,13 +191,15 @@ namespace IbanValidator
             };
         }
 
-        public static int CheckSumForIban(string iban)
+        private static int CheckSumForIban(string iban)
         {
             var bankCode = iban[4..];
             var countryCode = iban[..2];
             var checkedIban = $"{bankCode}{countryCode}00";
 
             checkedIban = IntValueForString(checkedIban.ToUpper());
+
+            checkedIban = checkedIban.TrimStart('0');
             var remainder = ISO7064.MOD97_10(checkedIban);
 
             return 98 - remainder;
@@ -231,7 +233,7 @@ namespace IbanValidator
             return string.Join("", returnValue);
         }
 
-        public static string PreFixZerosToAccount(string bankNumber, int length)
+        private static string PreFixZerosToAccount(string bankNumber, int length)
         {
             var bankNumberWithPrefixes = bankNumber;
 

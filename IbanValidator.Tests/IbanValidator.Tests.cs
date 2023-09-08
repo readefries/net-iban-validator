@@ -242,4 +242,15 @@ public class Tests
 
         result.Should().Be(IbanCheckStatus.InvalidInnerStructure, $"{sut} should be an invalid structure, yet the result is {result}");
     }
+
+    [TestMethod]
+    public void TestThatAValidBrazilianIbanWillNotCrash()
+    {
+        //             F08F05F10U01A01
+        var sut = "BR0200000000010670000117668C1";
+
+        var result = Validator.IsValidIban(sut);
+
+        result.Should().Be(IbanCheckStatus.ValidIban, $"{sut} should be a valid IBAN, yet the result is {result}");
+    }
 }
