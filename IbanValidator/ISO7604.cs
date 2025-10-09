@@ -5,11 +5,11 @@ namespace IbanValidator
 {
     public abstract class ISO7064
     {
-        private const string Mod9710ValidChars = "^([0-9]{1,})$";
+        private static readonly Regex Mod9710ValidCharsRegex = new Regex("^([0-9]+)$", RegexOptions.Compiled);
 
         public static int MOD97_10(string input)
         {
-            if (!Regex.IsMatch(input, Mod9710ValidChars))
+            if (!Mod9710ValidCharsRegex.IsMatch(input))
             {
                 return -1; // Equivalent to NSNotFound in Swift
             }
