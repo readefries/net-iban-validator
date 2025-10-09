@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace IbanValidator
 {
@@ -31,8 +32,7 @@ namespace IbanValidator
 
         public static string CreateIBAN(string account, string? bic = null, string? countryCode = null)
         {
-            var countryModels = new CountryModels();
-            countryModels.LoadModels();
+            var countryModels = CountryModels.Instance;
 
             if (string.IsNullOrEmpty(account))
             {
@@ -55,9 +55,13 @@ namespace IbanValidator
                 {
                     countryModel = countryModels.GetModel(countryCode);
                 }
-                catch
+                catch (CountryNotFoundException)
                 {
-                    throw new ArgumentException($"CountryModel not found for {countryCode}");
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new IbanValidationException($"Failed to get country model for {countryCode}", ex);
                 }
 
                 var accountNumber = PreFixZerosToAccount(account, countryModel.Length - 4);
@@ -82,10 +86,9 @@ namespace IbanValidator
 
         public static IbanCheckStatus IsValidIban(string iban)
         {
-            var countryModels = new CountryModels();
-            countryModels.LoadModels();
+            var countryModels = CountryModels.Instance;
 
-            if (!Regex.IsMatch(iban, IbanStructure))
+            if (!IbanStructureRegex.IsMatch(iban))
             {
                 return IbanCheckStatus.InvalidStructure;
             }
@@ -101,6 +104,153 @@ namespace IbanValidator
             try
             {
                 countryModel = countryModels.GetModel(countryCode);
+            }
+            catch (CountryNotFoundException)
+            {
+                return IbanCheckStatus.InvalidCountryCode;
+            }
+            catch
+            {
+                return IbanCheckStatus.InvalidCountryCode;
+            }
+
+            var startBytes = iban[..4];
+
+            if (!StartBytesRegex.IsMatch(startBytes))
+            {
+                return IbanCheckStatus.InvalidStartBytes;
+            }
+
+            var innerStructure = countryModel.InnerStructure;
+            var bbanOffset = 0;
+            var bban = iban[4..];
+
+            if (string.IsNullOrEmpty(bban))
+            {
+                return IbanCheckStatus.InvalidBankAccount;
+            }
+
+            for (var i = 0; i < innerStructure.Length / 3; i++)
+            {
+                var startIndex = i * 3;
+                var format = innerStructure.Substring(startIndex, 3);
+
+                if (!int.TryParse(innerStructure.Substring(startIndex + 1, 2), out var formatLength))
+                {
+                    return IbanCheckStatus.InvalidInnerStructure;
+                }
+
+                var partEndIndex = Math.Min(bbanOffset + formatLength, bban.Length);
+                var innerPart = bban.Substring(bbanOffset, partEndIndex - bbanOffset);
+
+                if (!IsStringConformFormat(innerPart, format))
+                {
+                    return IbanCheckStatus.InvalidInnerStructure;
+                }
+
+                bbanOffset += formatLength;
+            }
+
+            if (countryModel.Length != iban.Length)
+            {
+                return IbanCheckStatus.InvalidLength;
+            }
+
+            var checksumString = iban.Substring(2, 2);
+
+            if (!int.TryParse(checksumString, out var expectedChecksum))
+            {
+                return IbanCheckStatus.InvalidChecksum;
+            }
+
+            if (expectedChecksum == CheckSumForIban(iban))
+            {
+                return IbanCheckStatus.ValidIban;
+            }
+
+            return IbanCheckStatus.InvalidChecksum;
+        }
+
+        public static async Task<string> CreateIBANAsync(string account, string? bic = null, string? countryCode = null)
+        {
+            var countryModels = CountryModels.Instance;
+            await countryModels.LoadModelsAsync();
+
+            if (string.IsNullOrEmpty(account))
+            {
+                return "";
+            }
+
+            if (!string.IsNullOrEmpty(bic))
+            {
+                if (bic.Length != 8 && bic.Length != 11)
+                {
+                    return "";
+                }
+
+                var bankCode = bic[..4];
+                var countryCodeFromBic = bic.Substring(4, 2);
+                countryCode ??= countryCodeFromBic;
+
+                CountryModel countryModel;
+                try
+                {
+                    countryModel = countryModels.GetModel(countryCode);
+                }
+                catch (CountryNotFoundException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new IbanValidationException($"Failed to get country model for {countryCode}", ex);
+                }
+
+                var accountNumber = PreFixZerosToAccount(account, countryModel.Length - 4);
+
+                var ibanWithoutChecksum = $"{countryCode}00{bankCode}{accountNumber}";
+
+                var checksum = CheckSumForIban(ibanWithoutChecksum);
+
+                return $"{countryCode}{checksum}{bankCode}{accountNumber}";
+            }
+
+            if (!string.IsNullOrEmpty(countryCode))
+            {
+                var ibanWithoutChecksum = $"{countryCode}00{account}";
+                var checksum = CheckSumForIban(ibanWithoutChecksum);
+
+                return $"{countryCode}{checksum}{account}";
+            }
+
+            return "";
+        }
+
+        public static async Task<IbanCheckStatus> IsValidIbanAsync(string iban)
+        {
+            var countryModels = CountryModels.Instance;
+            await countryModels.LoadModelsAsync();
+
+            if (!IbanStructureRegex.IsMatch(iban))
+            {
+                return IbanCheckStatus.InvalidStructure;
+            }
+
+            if (iban.Length < 4)
+            {
+                return IbanCheckStatus.InvalidStructure;
+            }
+
+            var countryCode = iban[..2];
+
+            CountryModel countryModel;
+            try
+            {
+                countryModel = countryModels.GetModel(countryCode);
+            }
+            catch (CountryNotFoundException)
+            {
+                return IbanCheckStatus.InvalidCountryCode;
             }
             catch
             {
