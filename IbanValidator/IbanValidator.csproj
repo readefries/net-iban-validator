@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <PackageId>cloudcosmonaut.ibanvalidator</PackageId>
-    <Version>1.0.8</Version>
-    <Authors>Hindrik Bruinsma</Authors>
+    <Version>1.0.9</Version>
+    <Authors>Hendrik Bruinsma</Authors>
     <Product>IBAN Validator</Product>
     <Description>A simple .NET library to validate IBAN numbers for 74 countries.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>Iban Validator</Title>
     <Copyright>Copyright (c) Hindrik Bruinsma and Contributors</Copyright>
-    <PackageProjectUrl>https://github.com/cloudcosmonaut/net-iban-validator</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/readefries/net-iban-validator</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/cloudcosmonaut/net-iban-validator</RepositoryUrl>
+    <RepositoryUrl>https://github.com/readefries/net-iban-validator</RepositoryUrl>
     <DelaySign>true</DelaySign>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LangVersion>8</LangVersion>
