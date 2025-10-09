@@ -19,15 +19,15 @@ namespace IbanValidator
 
     public abstract class Validator
     {
-        private static readonly string IbanStructure = "^([A-Za-z0-9]{4,})*$";
-        private static readonly string DecimalsAndCharacters = "^([A-Za-z0-9])*$";
-        private static readonly string DecimalsAndUppercaseCharacters = "^([A-Z0-9])*$";
-        private static readonly string DecimalsAndLowercaseCharacters = "^([a-z0-9])*$";
-        private static readonly string Characters = "^([A-Za-z])*$";
-        private static readonly string Decimals = "^([0-9])*$";
-        private static readonly string LowercaseCharacters = "^([a-z])*$";
-        private static readonly string UppercaseCharacters = "^([A-Z])*$";
-        private static readonly string StartBytesRegex = "^([A-Z]{2}[0-9]{2})$";
+        private static readonly Regex IbanStructureRegex = new Regex("^([A-Za-z0-9]{4,})*$", RegexOptions.Compiled);
+        private static readonly Regex DecimalsAndCharactersRegex = new Regex("^([A-Za-z0-9])*$", RegexOptions.Compiled);
+        private static readonly Regex DecimalsAndUppercaseCharactersRegex = new Regex("^([A-Z0-9])*$", RegexOptions.Compiled);
+        private static readonly Regex DecimalsAndLowercaseCharactersRegex = new Regex("^([a-z0-9])*$", RegexOptions.Compiled);
+        private static readonly Regex CharactersRegex = new Regex("^([A-Za-z])*$", RegexOptions.Compiled);
+        private static readonly Regex DecimalsRegex = new Regex("^([0-9])*$", RegexOptions.Compiled);
+        private static readonly Regex LowercaseCharactersRegex = new Regex("^([a-z])*$", RegexOptions.Compiled);
+        private static readonly Regex UppercaseCharactersRegex = new Regex("^([A-Z])*$", RegexOptions.Compiled);
+        private static readonly Regex StartBytesRegex = new Regex("^([A-Z]{2}[0-9]{2})$", RegexOptions.Compiled);
 
         public static string CreateIBAN(string account, string? bic = null, string? countryCode = null)
         {
@@ -109,7 +109,7 @@ namespace IbanValidator
 
             var startBytes = iban[..4];
 
-            if (!Regex.IsMatch(startBytes, StartBytesRegex))
+            if (!StartBytesRegex.IsMatch(startBytes))
             {
                 return IbanCheckStatus.InvalidStartBytes;
             }
@@ -180,13 +180,13 @@ namespace IbanValidator
 
             return format[0] switch
             {
-                'A' => Regex.IsMatch(input, DecimalsAndCharacters),
-                'B' => Regex.IsMatch(input, DecimalsAndUppercaseCharacters),
-                'C' => Regex.IsMatch(input, Characters),
-                'F' => Regex.IsMatch(input, Decimals),
-                'L' => Regex.IsMatch(input, LowercaseCharacters),
-                'U' => Regex.IsMatch(input, UppercaseCharacters),
-                'W' => Regex.IsMatch(input, DecimalsAndLowercaseCharacters),
+                'A' => DecimalsAndCharactersRegex.IsMatch(input),
+                'B' => DecimalsAndUppercaseCharactersRegex.IsMatch(input),
+                'C' => CharactersRegex.IsMatch(input),
+                'F' => DecimalsRegex.IsMatch(input),
+                'L' => LowercaseCharactersRegex.IsMatch(input),
+                'U' => UppercaseCharactersRegex.IsMatch(input),
+                'W' => DecimalsAndLowercaseCharactersRegex.IsMatch(input),
                 _ => false,
             };
         }
@@ -207,7 +207,7 @@ namespace IbanValidator
 
         public static string IntValueForString(string input)
         {
-            if (!Regex.IsMatch(input, DecimalsAndUppercaseCharacters))
+            if (!DecimalsAndUppercaseCharactersRegex.IsMatch(input))
             {
                 return "";
             }
