@@ -4,28 +4,10 @@ on:
       - main
 
 jobs:
-  release-please:
+  publish-nuget:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
-    steps:
-      - name: Create release pull request
-        id: release
-        uses: googleapis/release-please-action@v5
-        with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-
-  publish-nuget:
-    needs: release-please
-    if: needs.release-please.outputs.release_created == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v7
@@ -44,13 +26,6 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --configuration Release
-
-      - name: Verify release baseline
-        run: |
-          if ! git tag --list | grep -Fxq 'v1.0.9'; then
-            echo "::error::Create the initial v1.0.9 GitHub release at the last commit containing package version 1.0.9 before enabling automated releases."
-            exit 1
-          fi
 
       - name: Create GitHub release
         id: semantic-release
